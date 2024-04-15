@@ -9,22 +9,37 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fernandakipper.aiassistantjava.dto.MessageDTO;
 import com.fernandakipper.aiassistantjava.factory.AiAssistantFactory;
+import com.fernandakipper.aiassistantjava.factory.ContentRetrieverFactory;
+import com.fernandakipper.aiassistantjava.factory.DocumentAssistantFactory;
+import com.fernandakipper.aiassistantjava.factory.EmbeddingFactory;
 
 import dev.langchain4j.model.chat.ChatLanguageModel;
-
 
 @RestController
 @RequestMapping("/api/chat")
 public class AiAssistantController {
     @Value("${langchain.huggingFace.accessToken}")
     private String token;
-    
+
     @PostMapping()
     public ResponseEntity chat(@RequestBody MessageDTO messageDTO) {
-        ChatLanguageModel chatLanguageModel = AiAssistantFactory.createHuggingFace(token);
-        String response = chatLanguageModel.generate(messageDTO.message());
+        /*
+        * String response = chatLanguageModel.generate(messageDTO.message());
+        * return ResponseEntity.ok().body(response);
+        */
+        ChatLanguageModel chatModel = AiAssistantFactory.createLocalChatModel();
 
+        var embeddingModel = EmbeddingFactory.createEmbeddingModel();
+        var embeddingStore = EmbeddingFactory.createEmbeddingStore();
+        var fileContentRetriever = ContentRetrieverFactory.createFileContentRetriever(
+                embeddingModel,
+                embeddingStore,
+                "movies.txt");
+
+        var documentAssistant = new DocumentAssistantFactory(chatModel, fileContentRetriever);
+        
+        String response = documentAssistant.chat(messageDTO.message());
         return ResponseEntity.ok().body(response);
     }
-    
+
 }

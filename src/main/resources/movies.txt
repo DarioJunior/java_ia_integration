@@ -1,0 +1,11 @@
+Personal Informatio
+---
+
+Name: Dário Junior
+birthDateYear: 1994
+City: Rosário do Sul
+State: Rio Grande do Sul
+Country: Brazil
+Role: Software Developer
+resume: I am a Junior Software Developer at Agência Mandarin, I born in Rosário do Sul and now I live in Santa Maria both cities in Rio Grande do Sul.
+---
